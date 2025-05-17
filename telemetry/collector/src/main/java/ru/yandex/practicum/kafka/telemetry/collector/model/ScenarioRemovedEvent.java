@@ -22,10 +22,10 @@ public class ScenarioRemovedEvent extends HubEvent {
     /**
      * Returns the type of this event.
      *
-     * @return {@code SCENARIO_REMOVED_EVENT}
+     * @return {@code SCENARIO_REMOVED}
      */
     @Override
     public HubEventType getType() {
-        return HubEventType.SCENARIO_REMOVED_EVENT;
+        return HubEventType.SCENARIO_REMOVED;
     }
 }

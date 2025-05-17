@@ -22,10 +22,10 @@ public class DeviceRemovedEvent extends HubEvent {
     /**
      * Returns the type of this event.
      *
-     * @return {@code DEVICE_REMOVED_EVENT}
+     * @return {@code DEVICE_REMOVED}
      */
     @Override
     public HubEventType getType() {
-        return HubEventType.DEVICE_REMOVED_EVENT;
+        return HubEventType.DEVICE_REMOVED;
     }
 }

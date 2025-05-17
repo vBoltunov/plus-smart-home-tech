@@ -1,5 +1,6 @@
 package ru.yandex.practicum.kafka.telemetry.collector.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceAction;
 import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceAddedEvent;
 import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceRemovedEvent;
@@ -12,9 +13,11 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class HubEventMapper {
 
     public static HubEventAvro toAvro(HubEvent event) {
+        log.info("Mapping hub event: {}, class: {}, type: {}", event, event.getClass().getName(), event.getType());
         HubEventAvro.Builder builder = HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(event.getTimestamp().toEpochMilli());
@@ -25,24 +28,20 @@ public class HubEventMapper {
                             .setId(added.getId())
                             .setType(DeviceTypeAvro.valueOf(added.getDeviceType().name()))
                             .build());
-
             case DeviceRemovedEvent removed ->
                     builder.setPayload(DeviceRemovedEventAvro.newBuilder()
                             .setId(removed.getId())
                             .build());
-
             case ScenarioAddedEvent added ->
                     builder.setPayload(ScenarioAddedEventAvro.newBuilder()
                             .setName(added.getName())
                             .setConditions(convertConditions(added.getConditions()))
                             .setActions(convertActions(added.getActions()))
                             .build());
-
             case ScenarioRemovedEvent removed ->
                     builder.setPayload(ScenarioRemovedEventAvro.newBuilder()
                             .setName(removed.getName())
                             .build());
-
             default ->
                     throw new IllegalArgumentException("Unknown hub event type: " + event.getClass().getName());
         }

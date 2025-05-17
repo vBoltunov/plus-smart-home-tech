@@ -26,10 +26,10 @@ public class DeviceAddedEvent extends HubEvent {
     /**
      * Returns the type of this event.
      *
-     * @return {@code DEVICE_ADDED_EVENT}
+     * @return {@code DEVICE_ADDED}
      */
     @Override
     public HubEventType getType() {
-        return HubEventType.DEVICE_ADDED_EVENT;
+        return HubEventType.DEVICE_ADDED;
     }
 }

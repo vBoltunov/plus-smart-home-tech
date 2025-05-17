@@ -31,10 +31,10 @@ public class ScenarioAddedEvent extends HubEvent {
     /**
      * Returns the type of this event.
      *
-     * @return {@code SCENARIO_ADDED_EVENT}
+     * @return {@code SCENARIO_ADDED}
      */
     @Override
     public HubEventType getType() {
-        return HubEventType.SCENARIO_ADDED_EVENT;
+        return HubEventType.SCENARIO_ADDED;
     }
 }
