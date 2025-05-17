@@ -14,7 +14,7 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.SensorEvent;
 import ru.yandex.practicum.kafka.telemetry.collector.service.CollectorService;
 
 @RestController
-@RequestMapping("/telemetry")
+@RequestMapping("/events")
 @RequiredArgsConstructor
 @Slf4j
 public class CollectorController {
