@@ -15,10 +15,14 @@ import ru.yandex.practicum.kafka.telemetry.collector.service.CollectorService;
 
 @RestController
 @RequestMapping("/events")
-@RequiredArgsConstructor
 @Slf4j
 public class CollectorController {
     private final CollectorService collectorService;
+
+    public CollectorController(CollectorService collectorService) {
+        this.collectorService = collectorService;
+        log.info("CollectorController initialized");
+    }
 
     @PostMapping("/sensors")
     @ResponseStatus(HttpStatus.ACCEPTED)
