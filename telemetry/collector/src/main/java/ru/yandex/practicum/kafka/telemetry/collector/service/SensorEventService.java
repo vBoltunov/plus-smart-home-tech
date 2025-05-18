@@ -22,8 +22,7 @@ public class SensorEventService implements EventService {
             throw new IllegalArgumentException("Invalid event type: expected SensorEvent");
         }
         var avroEvent = SensorEventMapper.toAvro(sensorEvent);
-
-        kafkaConfig.getProducer().send(new ProducerRecord<>(kafkaConfig.getSensorEventsTopic(), sensorEvent.getHubId(), avroEvent));
+        kafkaConfig.getProducer().send(new ProducerRecord<>(kafkaConfig.getSensorEventsTopic(), sensorEvent.getId(), avroEvent));
         log.info("Sent sensor event to {}: {}", kafkaConfig.getSensorEventsTopic(), sensorEvent);
     }
 }
