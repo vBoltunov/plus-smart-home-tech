@@ -3,6 +3,7 @@ package ru.yandex.practicum.kafka.telemetry.collector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import ru.yandex.practicum.kafka.telemetry.collector.config.KafkaConfig;
 import ru.yandex.practicum.kafka.telemetry.collector.service.CollectorService;
 
 import java.util.HashMap;
@@ -12,6 +13,11 @@ import java.util.Map;
 public class CollectorApplication {
     public static void main(String[] args) {
         SpringApplication.run(CollectorApplication.class, args);
+    }
+
+    @Bean(name = "collectorService")
+    public CollectorService collectorService(KafkaConfig kafkaConfig) {
+        return new CollectorService(kafkaConfig);
     }
 
     @Bean
