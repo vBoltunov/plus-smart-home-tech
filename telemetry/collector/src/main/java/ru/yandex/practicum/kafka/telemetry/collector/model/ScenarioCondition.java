@@ -1,5 +1,6 @@
 package ru.yandex.practicum.kafka.telemetry.collector.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,5 +30,11 @@ public class ScenarioCondition {
     private ConditionType type;
     @NotNull
     private ConditionOperation operation;
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.CLASS,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "@class"
+    )
     private Object value;
 }
