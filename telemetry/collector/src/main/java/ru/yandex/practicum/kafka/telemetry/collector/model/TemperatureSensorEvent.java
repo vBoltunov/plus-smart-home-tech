@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.collector.model;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,9 +18,7 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.enums.SensorEventType
 @Setter
 @ToString(callSuper = true)
 public class TemperatureSensorEvent extends SensorEvent {
-    @NotNull
     private Integer temperatureC;
-    @NotNull
     private Integer temperatureF;
 
     @Override
