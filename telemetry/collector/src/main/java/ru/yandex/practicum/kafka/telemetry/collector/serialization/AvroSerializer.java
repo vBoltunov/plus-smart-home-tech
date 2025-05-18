@@ -6,8 +6,6 @@ import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.common.serialization.Serializer;
-import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,21 +18,25 @@ public class AvroSerializer<T extends SpecificRecordBase> implements Serializer<
         if (data == null) {
             return null;
         }
-        log.info("Serializing Avro data: type={}, topic={}, payload={}",
-                data.getClass().getSimpleName(), topic,
-                data instanceof HubEventAvro ? ((HubEventAvro) data).getPayload() :
-                        data instanceof SensorEventAvro ? ((SensorEventAvro) data).getPayload() : "unknown");
+        String payloadType = "unknown";
+        if (data instanceof ru.yandex.practicum.kafka.telemetry.event.HubEventAvro) {
+            payloadType = ((ru.yandex.practicum.kafka.telemetry.event.HubEventAvro) data).getPayload().getClass().getSimpleName();
+        } else if (data instanceof ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro) {
+            payloadType = ((ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro) data).getPayload().getClass().getSimpleName();
+        }
+        log.info("Serializing Avro data: type={}, topic={}, payloadType={}",
+                data.getClass().getSimpleName(), topic, payloadType);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
             SpecificDatumWriter<T> writer = new SpecificDatumWriter<>(data.getSchema());
             writer.write(data, encoder);
             encoder.flush();
-            log.info("Serialized Avro data: type={}, topic={}, size={} bytes",
-                    data.getClass().getSimpleName(), topic, out.size());
+            log.info("Serialized Avro data: type={}, topic={}, payloadType={}, size={} bytes",
+                    data.getClass().getSimpleName(), topic, payloadType, out.size());
             return out.toByteArray();
         } catch (IOException e) {
-            log.error("Failed to serialize Avro data: type={}, topic={}",
-                    data.getClass().getSimpleName(), topic, e);
+            log.error("Failed to serialize Avro data: type={}, topic={}, payloadType={}",
+                    data.getClass().getSimpleName(), topic, payloadType, e);
             throw new RuntimeException("Failed to serialize Avro data", e);
         }
     }
