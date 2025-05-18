@@ -41,4 +41,8 @@ public class KafkaConfig {
 
         producer = new KafkaProducer<>(props);
     }
+
+    public KafkaProducer<String, SpecificRecordBase> getProducer() {
+        return producer;
+    }
 }
