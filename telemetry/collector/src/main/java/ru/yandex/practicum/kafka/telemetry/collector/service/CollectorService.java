@@ -1,8 +1,8 @@
 package ru.yandex.practicum.kafka.telemetry.collector.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.collector.config.KafkaConfig;
 import ru.yandex.practicum.kafka.telemetry.collector.mapper.HubEventMapper;
@@ -11,10 +11,14 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.HubEvent;
 import ru.yandex.practicum.kafka.telemetry.collector.model.SensorEvent;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class CollectorService {
     private final KafkaConfig kafkaConfig;
+
+    @Autowired
+    public CollectorService(KafkaConfig kafkaConfig) {
+        this.kafkaConfig = kafkaConfig;
+    }
 
     public void processSensorEvent(SensorEvent event) {
         if (!(event instanceof SensorEvent)) {
