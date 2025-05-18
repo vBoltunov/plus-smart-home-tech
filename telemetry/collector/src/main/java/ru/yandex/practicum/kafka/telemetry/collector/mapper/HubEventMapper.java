@@ -51,8 +51,12 @@ public class HubEventMapper {
                             .setSensorId(c.getSensorId())
                             .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                             .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()));
-                    if (c.getValue() instanceof Integer || c.getValue() instanceof Boolean) {
-                        builder.setValue(c.getValue());
+                    if (c.getValue() != null) {
+                        if (c.getValue() instanceof Integer || c.getValue() instanceof Boolean) {
+                            builder.setValue(c.getValue());
+                        } else {
+                            log.warn("Неподдерживаемый тип value в ScenarioCondition: {}", c.getValue().getClass());
+                        }
                     }
                     return builder.build();
                 })
