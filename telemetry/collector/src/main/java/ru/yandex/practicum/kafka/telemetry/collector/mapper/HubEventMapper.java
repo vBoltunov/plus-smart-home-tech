@@ -46,22 +46,30 @@ public class HubEventMapper {
 
     private static List<ScenarioConditionAvro> convertConditions(List<ScenarioCondition> conditions) {
         return conditions.stream()
-                .map(c -> ScenarioConditionAvro.newBuilder()
-                        .setSensorId(c.getSensorId())
-                        .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                        .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                        .setValue(c.getValue())
-                        .build())
+                .map(c -> {
+                    ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
+                            .setSensorId(c.getSensorId())
+                            .setType(ConditionTypeAvro.valueOf(c.getType().name()))
+                            .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()));
+                    if (c.getValue() instanceof Integer || c.getValue() instanceof Boolean) {
+                        builder.setValue(c.getValue());
+                    }
+                    return builder.build();
+                })
                 .collect(Collectors.toList());
     }
 
     private static List<DeviceActionAvro> convertActions(List<DeviceAction> actions) {
         return actions.stream()
-                .map(a -> DeviceActionAvro.newBuilder()
-                        .setSensorId(a.getSensorId())
-                        .setType(ActionTypeAvro.valueOf(a.getType().name()))
-                        .setValue(a.getValue())
-                        .build())
+                .map(a -> {
+                    DeviceActionAvro.Builder builder = DeviceActionAvro.newBuilder()
+                            .setSensorId(a.getSensorId())
+                            .setType(ActionTypeAvro.valueOf(a.getType().name()));
+                    if (a.getValue() != null) {
+                        builder.setValue(a.getValue());
+                    }
+                    return builder.build();
+                })
                 .collect(Collectors.toList());
     }
 }
