@@ -5,6 +5,15 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.SensorEventType;
 
+/**
+ * Represents a light sensor event in the system.
+ *
+ * Includes measurements for link quality and ambient light levels.
+ *
+ * Fields:
+ * - `linkQuality` - Signal strength metric.
+ * - `luminosity` - Light intensity measured by the sensor.
+ */
 @Getter
 @Setter
 @ToString(callSuper = true)
