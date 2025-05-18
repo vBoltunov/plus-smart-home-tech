@@ -1,13 +1,8 @@
 package ru.yandex.practicum.kafka.telemetry.collector.mapper;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceAction;
-import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceAddedEvent;
-import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceRemovedEvent;
-import ru.yandex.practicum.kafka.telemetry.collector.model.HubEvent;
-import ru.yandex.practicum.kafka.telemetry.collector.model.ScenarioAddedEvent;
-import ru.yandex.practicum.kafka.telemetry.collector.model.ScenarioCondition;
-import ru.yandex.practicum.kafka.telemetry.collector.model.ScenarioRemovedEvent;
+import ru.yandex.practicum.kafka.telemetry.collector.model.*;
+import ru.yandex.practicum.kafka.telemetry.collector.model.enums.HubEventType;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 import java.util.List;
@@ -17,33 +12,63 @@ import java.util.stream.Collectors;
 public class HubEventMapper {
 
     public static HubEventAvro toAvro(HubEvent event) {
-        log.info("Mapping hub event: {}, class: {}, type: {}", event, event.getClass().getName(), event.getType());
+        log.info("Маппинг события хаба: {}, тип: {}, класс: {}", event, event.getType(), event.getClass().getSimpleName());
+
         HubEventAvro.Builder builder = HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(event.getTimestamp().toEpochMilli());
 
-        switch (event) {
-            case DeviceAddedEvent added ->
-                    builder.setPayload(DeviceAddedEventAvro.newBuilder()
-                            .setId(added.getId())
-                            .setType(DeviceTypeAvro.valueOf(added.getDeviceType().name()))
-                            .build());
-            case DeviceRemovedEvent removed ->
-                    builder.setPayload(DeviceRemovedEventAvro.newBuilder()
-                            .setId(removed.getId())
-                            .build());
-            case ScenarioAddedEvent added ->
-                    builder.setPayload(ScenarioAddedEventAvro.newBuilder()
-                            .setName(added.getName())
-                            .setConditions(convertConditions(added.getConditions()))
-                            .setActions(convertActions(added.getActions()))
-                            .build());
-            case ScenarioRemovedEvent removed ->
-                    builder.setPayload(ScenarioRemovedEventAvro.newBuilder()
-                            .setName(removed.getName())
-                            .build());
-            default ->
-                    throw new IllegalArgumentException("Unknown hub event type: " + event.getClass().getName());
+        // Используем HubEventType для определения типа события
+        HubEventType eventType = event.getType();
+        log.debug("Тип события из getType(): {}", eventType);
+
+        switch (eventType) {
+            case DEVICE_ADDED:
+                if (!(event instanceof DeviceAddedEvent added)) {
+                    log.error("Несоответствие типа: ожидалось DeviceAddedEvent, получено {}", event.getClass().getSimpleName());
+                    throw new IllegalArgumentException("Ожидалось событие DeviceAddedEvent, но получено: " + event.getClass().getSimpleName());
+                }
+                builder.setPayload(DeviceAddedEventAvro.newBuilder()
+                        .setId(added.getId())
+                        .setType(DeviceTypeAvro.valueOf(added.getDeviceType().name()))
+                        .build());
+                break;
+
+            case DEVICE_REMOVED:
+                if (!(event instanceof DeviceRemovedEvent removed)) {
+                    log.error("Несоответствие типа: ожидалось DeviceRemovedEvent, получено {}", event.getClass().getSimpleName());
+                    throw new IllegalArgumentException("Ожидалось событие DeviceRemovedEvent, но получено: " + event.getClass().getSimpleName());
+                }
+                builder.setPayload(DeviceRemovedEventAvro.newBuilder()
+                        .setId(removed.getId())
+                        .build());
+                break;
+
+            case SCENARIO_ADDED:
+                if (!(event instanceof ScenarioAddedEvent addedScenario)) {
+                    log.error("Несоответствие типа: ожидалось ScenarioAddedEvent, получено {}", event.getClass().getSimpleName());
+                    throw new IllegalArgumentException("Ожидалось событие ScenarioAddedEvent, но получено: " + event.getClass().getSimpleName());
+                }
+                builder.setPayload(ScenarioAddedEventAvro.newBuilder()
+                        .setName(addedScenario.getName())
+                        .setConditions(convertConditions(addedScenario.getConditions()))
+                        .setActions(convertActions(addedScenario.getActions()))
+                        .build());
+                break;
+
+            case SCENARIO_REMOVED:
+                if (!(event instanceof ScenarioRemovedEvent removedScenario)) {
+                    log.error("Несоответствие типа: ожидалось ScenarioRemovedEvent, получено {}", event.getClass().getSimpleName());
+                    throw new IllegalArgumentException("Ожидалось событие ScenarioRemovedEvent, но получено: " + event.getClass().getSimpleName());
+                }
+                builder.setPayload(ScenarioRemovedEventAvro.newBuilder()
+                        .setName(removedScenario.getName())
+                        .build());
+                break;
+
+            default:
+                log.error("Неизвестный тип события хаба: {}", eventType);
+                throw new IllegalArgumentException("Неизвестный тип события хаба: " + eventType);
         }
 
         return builder.build();
