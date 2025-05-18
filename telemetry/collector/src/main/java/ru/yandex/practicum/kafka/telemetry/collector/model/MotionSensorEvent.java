@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.collector.model;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,11 +19,8 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.enums.SensorEventType
 @Setter
 @ToString(callSuper = true)
 public class MotionSensorEvent extends SensorEvent {
-    @NotNull
     private Integer linkQuality;
-    @NotNull
     private Boolean motion;
-    @NotNull
     private Integer voltage;
 
     @Override
