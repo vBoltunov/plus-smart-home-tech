@@ -11,28 +11,32 @@ import java.util.stream.Collectors;
 public class HubEventMapper {
 
     public static HubEventAvro toAvro(HubEvent event) {
-        log.info("Маппинг события хаба: {}, класс: {}", event, event.getClass().getSimpleName());
+        log.info("Маппинг события хаба: {}, класс: {}, тип: {}", event, event.getClass().getSimpleName(), event.getType());
 
         HubEventAvro.Builder builder = HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(event.getTimestamp().toEpochMilli());
 
         if (event instanceof DeviceAddedEvent added) {
+            log.info("Маппинг DeviceAddedEvent: id={}, deviceType={}", added.getId(), added.getDeviceType());
             builder.setPayload(DeviceAddedEventAvro.newBuilder()
                     .setId(added.getId())
                     .setType(DeviceTypeAvro.valueOf(added.getDeviceType().name()))
                     .build());
         } else if (event instanceof DeviceRemovedEvent removed) {
+            log.info("Маппинг DeviceRemovedEvent: id={}", removed.getId());
             builder.setPayload(DeviceRemovedEventAvro.newBuilder()
                     .setId(removed.getId())
                     .build());
         } else if (event instanceof ScenarioAddedEvent scenario) {
+            log.info("Маппинг ScenarioAddedEvent: name={}", scenario.getName());
             builder.setPayload(ScenarioAddedEventAvro.newBuilder()
                     .setName(scenario.getName())
                     .setConditions(convertConditions(scenario.getConditions()))
                     .setActions(convertActions(scenario.getActions()))
                     .build());
         } else if (event instanceof ScenarioRemovedEvent removedScenario) {
+            log.info("Маппинг ScenarioRemovedEvent: name={}", removedScenario.getName());
             builder.setPayload(ScenarioRemovedEventAvro.newBuilder()
                     .setName(removedScenario.getName())
                     .build());
@@ -41,6 +45,7 @@ public class HubEventMapper {
             throw new IllegalArgumentException("Неподдерживаемый тип события хаба: " + event.getClass().getSimpleName());
         }
 
+        log.info("Событие {} замаплено в payload типа {}", event.getClass().getSimpleName(), builder.getPayload().getClass().getSimpleName());
         return builder.build();
     }
 
