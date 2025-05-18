@@ -22,14 +22,14 @@ public class CollectorController {
 
     @PostMapping("/sensors")
     public ResponseEntity<Void> collectSensorEvent(@Valid @RequestBody SensorEvent event) {
-        log.info("Received sensor event: {}", event);
+        log.info("Received sensor event: {}, class: {}", event, event.getClass().getSimpleName());
         eventServices.get("sensorEventService").processEvent(event);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/hubs")
     public ResponseEntity<Void> collectHubEvent(@Valid @RequestBody HubEvent event) {
-        log.info("Received hub event: {}", event);
+        log.info("Received hub event: {}, class: {}", event, event.getClass().getSimpleName());
         eventServices.get("hubEventService").processEvent(event);
         return ResponseEntity.ok().build();
     }
