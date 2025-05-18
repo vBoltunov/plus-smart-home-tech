@@ -3,38 +3,34 @@ package ru.yandex.practicum.kafka.telemetry.collector.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.kafka.telemetry.collector.model.HubEvent;
 import ru.yandex.practicum.kafka.telemetry.collector.model.SensorEvent;
 import ru.yandex.practicum.kafka.telemetry.collector.service.CollectorService;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/events")
 @Slf4j
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CollectorController {
-    private final CollectorService collectorService;
 
-    public CollectorController(CollectorService collectorService) {
-        this.collectorService = collectorService;
-        log.info("CollectorController initialized");
-    }
+    private final Map<String, CollectorService> eventServices;
 
     @PostMapping("/sensors")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
+    public ResponseEntity<Void> collectSensorEvent(@Valid @RequestBody SensorEvent event) {
         log.info("Received sensor event: {}", event);
-        collectorService.processSensorEvent(event);
+        eventServices.get("sensorEventService").processSensorEvent(event);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/hubs")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void collectHubEvent(@Valid @RequestBody HubEvent event) {
+    public ResponseEntity<Void> collectHubEvent(@Valid @RequestBody HubEvent event) {
         log.info("Received hub event: {}", event);
-        collectorService.processHubEvent(event);
+        eventServices.get("hubEventService").processHubEvent(event);
+        return ResponseEntity.ok().build();
     }
 }
