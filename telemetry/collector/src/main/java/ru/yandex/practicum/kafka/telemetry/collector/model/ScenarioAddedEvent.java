@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.HubEventType;
 
 import java.util.List;
@@ -20,13 +21,14 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ScenarioAddedEvent extends HubEvent {
     @NotBlank
-    private String name;
+    String name;
     @NotEmpty
-    private List<ScenarioCondition> conditions;
+    List<ScenarioCondition> conditions;
     @NotEmpty
-    private List<DeviceAction> actions;
+    List<DeviceAction> actions;
 
     /**
      * Returns the type of this event.
