@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.HubEventType;
 
 /**
@@ -15,9 +16,10 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.enums.HubEventType;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DeviceRemovedEvent extends HubEvent {
     @NotBlank
-    private String id;
+    String id;
 
     /**
      * Returns the type of this event.
