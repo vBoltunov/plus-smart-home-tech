@@ -33,10 +33,10 @@ protocol SensorEventProtocol {
 		union {
 			null,
 			ClimateSensorAvro,
-			LightSensorAvro,
 			MotionSensorAvro,
-			SwitchSensorAvro,
-			TemperatureSensorAvro
+			LightSensorAvro,
+			TemperatureSensorAvro,
+			SwitchSensorAvro
 		} payload;
 	}
 }
