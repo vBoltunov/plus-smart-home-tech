@@ -52,7 +52,6 @@ protocol HubEventProtocol {
 		string hub_id;
 		long timestamp;
 		union {
-			null,
 			DeviceAddedEventAvro,
 			DeviceRemovedEventAvro,
 			ScenarioAddedEventAvro,
