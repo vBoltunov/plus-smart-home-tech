@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.ConditionOperation;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.ConditionType;
 
@@ -23,18 +24,19 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.enums.ConditionType;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ScenarioCondition {
     @NotBlank
-    private String sensorId;
+    String sensorId;
     @NotNull
-    private ConditionType type;
+    ConditionType type;
     @NotNull
-    private ConditionOperation operation;
+    ConditionOperation operation;
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.CLASS,
             include = JsonTypeInfo.As.PROPERTY,
             property = "@class"
     )
-    private Object value;
+    Object value;
 }
