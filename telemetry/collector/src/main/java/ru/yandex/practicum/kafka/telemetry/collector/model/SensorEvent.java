@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.SensorEventType;
 
 import java.time.Instant;
@@ -36,13 +37,14 @@ import java.time.Instant;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public abstract class SensorEvent {
     @NotBlank
-    private String id;
+    String id;
     @NotBlank
-    private String hubId;
+    String hubId;
     @NotNull
-    private Instant timestamp = Instant.now();
+    Instant timestamp = Instant.now();
 
     @NotNull
     public abstract SensorEventType getType();
