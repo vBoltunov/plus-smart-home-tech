@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.ActionType;
 
 /**
@@ -20,10 +21,11 @@ import ru.yandex.practicum.kafka.telemetry.collector.model.enums.ActionType;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DeviceAction {
     @NotBlank
-    private String sensorId;
+    String sensorId;
     @NotNull
-    private ActionType type;
-    private Integer value;
+    ActionType type;
+    Integer value;
 }
