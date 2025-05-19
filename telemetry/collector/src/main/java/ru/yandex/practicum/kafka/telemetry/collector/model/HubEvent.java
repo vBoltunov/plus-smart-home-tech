@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.collector.model.enums.HubEventType;
 
 import java.time.Instant;
@@ -32,11 +33,12 @@ import java.time.Instant;
 @Getter
 @Setter
 @ToString
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public abstract class HubEvent {
     @NotBlank
-    private String hubId;
+    String hubId;
     @NotNull
-    private Instant timestamp = Instant.now();
+    Instant timestamp = Instant.now();
 
     @NotNull
     public abstract HubEventType getType();
