@@ -54,8 +54,8 @@ protocol HubEventProtocol {
 		union {
 			null,
 			DeviceAddedEventAvro,
-			DeviceRemovedEventAvro,
 			ScenarioAddedEventAvro,
+			DeviceRemovedEventAvro,
 			ScenarioRemovedEventAvro
 		} payload;
 	}
