@@ -12,4 +12,4 @@ spring:
     sensor-events-topic: telemetry.sensors.v1
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: ru.yandex.practicum.kafka.telemetry.collector.serialization.AvroSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
