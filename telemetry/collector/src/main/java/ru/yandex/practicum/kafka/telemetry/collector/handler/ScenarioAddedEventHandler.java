@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.collector.model.DeviceAction;
 import ru.yandex.practicum.kafka.telemetry.collector.model.ScenarioAddedEvent;
@@ -41,16 +42,16 @@ public class ScenarioAddedEventHandler implements HubEventHandler {
         hubEventService.processEvent(scenarioEvent);
     }
 
-    private List<ScenarioCondition> convertConditions(List<ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto> protoConditions) {
+    private List<ScenarioCondition> convertConditions(List<ScenarioConditionProto> protoConditions) {
         return protoConditions.stream()
                 .map(proto -> {
                     ScenarioCondition condition = new ScenarioCondition();
                     condition.setSensorId(proto.getSensorId());
                     condition.setType(ConditionType.valueOf(proto.getType().name()));
                     condition.setOperation(ConditionOperation.valueOf(proto.getOperation().name()));
-                    if (proto.getValueCase() == ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto.ValueCase.BOOL_VALUE) {
+                    if (proto.getValueCase() == ScenarioConditionProto.ValueCase.BOOL_VALUE) {
                         condition.setValue(proto.getBoolValue());
-                    } else if (proto.getValueCase() == ru.yandex.practicum.grpc.telemetry.event.ScenarioConditionProto.ValueCase.INT_VALUE) {
+                    } else if (proto.getValueCase() == ScenarioConditionProto.ValueCase.INT_VALUE) {
                         condition.setValue(proto.getIntValue());
                     }
                     return condition;
@@ -58,7 +59,7 @@ public class ScenarioAddedEventHandler implements HubEventHandler {
                 .collect(Collectors.toList());
     }
 
-    private List<DeviceAction> convertActions(List<ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto> protoActions) {
+    private List<DeviceAction> convertActions(List<DeviceActionProto> protoActions) {
         return protoActions.stream()
                 .map(proto -> {
                     DeviceAction action = new DeviceAction();
