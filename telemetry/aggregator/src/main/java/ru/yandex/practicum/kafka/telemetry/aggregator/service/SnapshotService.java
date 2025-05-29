@@ -8,6 +8,7 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -32,6 +33,12 @@ public class SnapshotService {
             return snap;
         });
 
+        // Проверка на null для sensorsState
+        if (snapshot.getSensorsState() == null) {
+            log.warn("sensorsState для хаба {} был null, инициализируем", hubId);
+            snapshot.setSensorsState(new HashMap<>());
+        }
+
         Map<String, SensorStateAvro> sensorsState = snapshot.getSensorsState();
         SensorStateAvro oldState = sensorsState.get(sensorId);
 
@@ -46,45 +53,57 @@ public class SnapshotService {
             Object oldPayload = oldState.getData();
 
             if (!oldPayload.getClass().equals(newPayload.getClass())) {
-                log.warn("Типы payload не совпадают: old={}, new={}", oldPayload.getClass(), newPayload.getClass());
+                log.warn("Типы payload не совпадают: old={}, new={}, обновляем снапшот",
+                        oldPayload.getClass().getSimpleName(), newPayload.getClass().getSimpleName());
             } else if (newPayload instanceof ClimateSensorAvro newClimate &&
                     oldPayload instanceof ClimateSensorAvro oldClimate) {
-                if (oldClimate.getTemperatureC() == newClimate.getTemperatureC() &&
-                        oldClimate.getHumidity() == newClimate.getHumidity() &&
-                        oldClimate.getCo2Level() == newClimate.getCo2Level()) {
-                    log.debug("ClimateSensorAvro: данные не изменились");
+                if (Objects.equals(oldClimate.getTemperatureC(), newClimate.getTemperatureC()) &&
+                        Objects.equals(oldClimate.getHumidity(), newClimate.getHumidity()) &&
+                        Objects.equals(oldClimate.getCo2Level(), newClimate.getCo2Level())) {
+                    log.debug("ClimateSensorAvro: данные не изменились, пропускаем");
                     return Optional.empty();
                 }
+                log.debug("ClimateSensorAvro: данные изменились, oldTemp={}, newTemp={}, oldHum={}, newHum={}",
+                        oldClimate.getTemperatureC(), newClimate.getTemperatureC(),
+                        oldClimate.getHumidity(), newClimate.getHumidity());
             } else if (newPayload instanceof LightSensorAvro newLight &&
                     oldPayload instanceof LightSensorAvro oldLight) {
-                if (oldLight.getLinkQuality() == newLight.getLinkQuality() &&
-                        oldLight.getLuminosity() == newLight.getLuminosity()) {
-                    log.debug("LightSensorAvro: данные не изменились");
+                if (Objects.equals(oldLight.getLinkQuality(), newLight.getLinkQuality()) &&
+                        Objects.equals(oldLight.getLuminosity(), newLight.getLuminosity())) {
+                    log.debug("LightSensorAvro: данные не изменились, пропускаем");
                     return Optional.empty();
                 }
+                log.debug("LightSensorAvro: данные изменились, oldLum={}, newLum={}",
+                        oldLight.getLuminosity(), newLight.getLuminosity());
             } else if (newPayload instanceof MotionSensorAvro newMotion &&
                     oldPayload instanceof MotionSensorAvro oldMotion) {
-                if (oldMotion.getLinkQuality() == newMotion.getLinkQuality() &&
-                        oldMotion.getMotion() == newMotion.getMotion() &&
-                        oldMotion.getVoltage() == newMotion.getVoltage()) {
-                    log.debug("MotionSensorAvro: данные не изменились");
+                if (Objects.equals(oldMotion.getLinkQuality(), newMotion.getLinkQuality()) &&
+                        Objects.equals(oldMotion.getMotion(), newMotion.getMotion()) &&
+                        Objects.equals(oldMotion.getVoltage(), newMotion.getVoltage())) {
+                    log.debug("MotionSensorAvro: данные не изменились, пропускаем");
                     return Optional.empty();
                 }
+                log.debug("MotionSensorAvro: данные изменились, oldMotion={}, newMotion={}",
+                        oldMotion.getMotion(), newMotion.getMotion());
             } else if (newPayload instanceof SwitchSensorAvro newSwitch &&
                     oldPayload instanceof SwitchSensorAvro oldSwitch) {
-                if (oldSwitch.getState() == newSwitch.getState()) {
-                    log.debug("SwitchSensorAvro: данные не изменились");
+                if (Objects.equals(oldSwitch.getState(), newSwitch.getState())) {
+                    log.debug("SwitchSensorAvro: данные не изменились, пропускаем");
                     return Optional.empty();
                 }
+                log.debug("SwitchSensorAvro: данные изменились, oldState={}, newState={}",
+                        oldSwitch.getState(), newSwitch.getState());
             } else if (newPayload instanceof TemperatureSensorAvro newTemp &&
                     oldPayload instanceof TemperatureSensorAvro oldTemp) {
-                if (oldTemp.getTemperatureC() == newTemp.getTemperatureC() &&
-                        oldTemp.getTemperatureF() == newTemp.getTemperatureF()) {
-                    log.debug("TemperatureSensorAvro: данные не изменились");
+                if (Objects.equals(oldTemp.getTemperatureC(), newTemp.getTemperatureC()) &&
+                        Objects.equals(oldTemp.getTemperatureF(), newTemp.getTemperatureF())) {
+                    log.debug("TemperatureSensorAvro: данные не изменились, пропускаем");
                     return Optional.empty();
                 }
+                log.debug("TemperatureSensorAvro: данные изменились, oldTempC={}, newTempC={}",
+                        oldTemp.getTemperatureC(), newTemp.getTemperatureC());
             } else {
-                log.warn("Необрабатываемый тип сенсора: {}", newPayload.getClass().getSimpleName());
+                log.warn("Неизвестный тип сенсора: {}, обновляем снапшот", newPayload.getClass().getSimpleName());
             }
             log.debug("Обновление состояния датчика {}: старое ts={}, новое ts={}", sensorId, oldTs, eventTimestampMillis);
         } else {
