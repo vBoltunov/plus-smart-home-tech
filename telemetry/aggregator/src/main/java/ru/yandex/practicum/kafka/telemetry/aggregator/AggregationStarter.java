@@ -9,18 +9,21 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.aggregator.service.SnapshotService;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
+import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collections;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AggregationStarter {
+public class AggregationStarter implements ApplicationRunner, Closeable {
     private final KafkaConsumer<String, SensorEventAvro> consumer;
     private final KafkaProducer<String, SensorsSnapshotAvro> producer;
     private final SnapshotService snapshotService;
@@ -31,13 +34,24 @@ public class AggregationStarter {
     @Value("${kafka.snapshots-topic}")
     private String snapshotsTopic;
 
+    private volatile boolean running = true;
+
+    @Override
+    public void run(ApplicationArguments args) {
+        start();
+    }
+
     public void start() {
         try {
             consumer.subscribe(Collections.singletonList(sensorEventsTopic));
             log.info("Subscribed to topic: {}", sensorEventsTopic);
 
-            while (true) {
+            while (running) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(100));
+                if (records.isEmpty()) {
+                    log.debug("No records polled from {}", sensorEventsTopic);
+                    continue;
+                }
                 for (ConsumerRecord<String, SensorEventAvro> record : records) {
                     SensorEventAvro event = record.value();
                     log.debug("Processing event: {}", event);
@@ -62,15 +76,21 @@ public class AggregationStarter {
         } catch (Exception e) {
             log.error("Error during event processing", e);
         } finally {
-            try {
-                producer.flush();
-                consumer.commitSync();
-            } finally {
-                log.info("Closing consumer");
-                consumer.close();
-                log.info("Closing producer");
-                producer.close();
-            }
+            close();
+        }
+    }
+
+    @Override
+    public void close() {
+        running = false;
+        try {
+            producer.flush();
+            consumer.commitSync();
+        } finally {
+            log.info("Closing consumer");
+            consumer.close();
+            log.info("Closing producer");
+            producer.close();
         }
     }
 }
