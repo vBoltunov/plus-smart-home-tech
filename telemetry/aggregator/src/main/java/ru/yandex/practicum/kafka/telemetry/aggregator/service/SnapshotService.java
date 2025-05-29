@@ -33,7 +33,6 @@ public class SnapshotService {
             return snap;
         });
 
-        // Проверка на null для sensorsState
         if (snapshot.getSensorsState() == null) {
             log.warn("sensorsState для хаба {} был null, инициализируем", hubId);
             snapshot.setSensorsState(new HashMap<>());
@@ -44,7 +43,8 @@ public class SnapshotService {
 
         if (oldState != null) {
             long oldTs = oldState.getTimestamp().toEpochMilli();
-            if (oldTs >= eventTimestampMillis) {
+            // Расслабляем проверку: пропускаем только явно устаревшие события (разница > 1ms)
+            if (oldTs > eventTimestampMillis + 1) {
                 log.debug("Пропущено устаревшее событие: старый ts={}, новый ts={}", oldTs, eventTimestampMillis);
                 return Optional.empty();
             }
@@ -60,17 +60,19 @@ public class SnapshotService {
                 if (Objects.equals(oldClimate.getTemperatureC(), newClimate.getTemperatureC()) &&
                         Objects.equals(oldClimate.getHumidity(), newClimate.getHumidity()) &&
                         Objects.equals(oldClimate.getCo2Level(), newClimate.getCo2Level())) {
-                    log.debug("ClimateSensorAvro: данные не изменились, пропускаем");
+                    log.debug("ClimateSensorAvro: данные не изменились, пропускаем, tempC={}, humidity={}, co2={}",
+                            newClimate.getTemperatureC(), newClimate.getHumidity(), newClimate.getCo2Level());
                     return Optional.empty();
                 }
-                log.debug("ClimateSensorAvro: данные изменились, oldTemp={}, newTemp={}, oldHum={}, newHum={}",
+                log.debug("ClimateSensorAvro: данные изменились, oldTempC={}, newTempC={}, oldHum={}, newHum={}",
                         oldClimate.getTemperatureC(), newClimate.getTemperatureC(),
                         oldClimate.getHumidity(), newClimate.getHumidity());
             } else if (newPayload instanceof LightSensorAvro newLight &&
                     oldPayload instanceof LightSensorAvro oldLight) {
                 if (Objects.equals(oldLight.getLinkQuality(), newLight.getLinkQuality()) &&
                         Objects.equals(oldLight.getLuminosity(), newLight.getLuminosity())) {
-                    log.debug("LightSensorAvro: данные не изменились, пропускаем");
+                    log.debug("LightSensorAvro: данные не изменились, пропускаем, luminosity={}, linkQuality={}",
+                            newLight.getLuminosity(), newLight.getLinkQuality());
                     return Optional.empty();
                 }
                 log.debug("LightSensorAvro: данные изменились, oldLum={}, newLum={}",
@@ -80,7 +82,8 @@ public class SnapshotService {
                 if (Objects.equals(oldMotion.getLinkQuality(), newMotion.getLinkQuality()) &&
                         Objects.equals(oldMotion.getMotion(), newMotion.getMotion()) &&
                         Objects.equals(oldMotion.getVoltage(), newMotion.getVoltage())) {
-                    log.debug("MotionSensorAvro: данные не изменились, пропускаем");
+                    log.debug("MotionSensorAvro: данные не изменились, пропускаем, motion={}, voltage={}",
+                            newMotion.getMotion(), newMotion.getVoltage());
                     return Optional.empty();
                 }
                 log.debug("MotionSensorAvro: данные изменились, oldMotion={}, newMotion={}",
@@ -88,7 +91,7 @@ public class SnapshotService {
             } else if (newPayload instanceof SwitchSensorAvro newSwitch &&
                     oldPayload instanceof SwitchSensorAvro oldSwitch) {
                 if (Objects.equals(oldSwitch.getState(), newSwitch.getState())) {
-                    log.debug("SwitchSensorAvro: данные не изменились, пропускаем");
+                    log.debug("SwitchSensorAvro: данные не изменились, пропускаем, state={}", newSwitch.getState());
                     return Optional.empty();
                 }
                 log.debug("SwitchSensorAvro: данные изменились, oldState={}, newState={}",
@@ -97,17 +100,18 @@ public class SnapshotService {
                     oldPayload instanceof TemperatureSensorAvro oldTemp) {
                 if (Objects.equals(oldTemp.getTemperatureC(), newTemp.getTemperatureC()) &&
                         Objects.equals(oldTemp.getTemperatureF(), newTemp.getTemperatureF())) {
-                    log.debug("TemperatureSensorAvro: данные не изменились, пропускаем");
+                    log.debug("TemperatureSensorAvro: данные не изменились, пропускаем, tempC={}", newTemp.getTemperatureC());
                     return Optional.empty();
                 }
                 log.debug("TemperatureSensorAvro: данные изменились, oldTempC={}, newTempC={}",
                         oldTemp.getTemperatureC(), newTemp.getTemperatureC());
             } else {
-                log.warn("Неизвестный тип сенсора: {}, обновляем снапшот", newPayload.getClass().getSimpleName());
+                log.warn("Неизвестный тип сенсора: {}, обновляем снапшот, payload={}",
+                        newPayload.getClass().getSimpleName(), newPayload);
             }
             log.debug("Обновление состояния датчика {}: старое ts={}, новое ts={}", sensorId, oldTs, eventTimestampMillis);
         } else {
-            log.debug("Добавление нового датчика в снапшот: {}", sensorId);
+            log.debug("Добавление нового датчика в снапшот: {}, payload={}", sensorId, event.getPayload());
         }
 
         SensorStateAvro newState = new SensorStateAvro();
