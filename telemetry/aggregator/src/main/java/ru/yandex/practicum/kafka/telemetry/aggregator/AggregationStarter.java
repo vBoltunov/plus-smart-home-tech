@@ -27,14 +27,13 @@ public class AggregationStarter implements ApplicationRunner, Closeable {
     private final KafkaConsumer<String, SensorEventAvro> consumer;
     private final KafkaProducer<String, SensorsSnapshotAvro> producer;
     private final SnapshotService snapshotService;
+    private volatile boolean running = true;
 
     @Value("${kafka.sensor-events-topic}")
     private String sensorEventsTopic;
 
     @Value("${kafka.snapshots-topic}")
     private String snapshotsTopic;
-
-    private volatile boolean running = true;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -43,38 +42,48 @@ public class AggregationStarter implements ApplicationRunner, Closeable {
 
     public void start() {
         try {
+            log.info("Подписка на топик: {}", sensorEventsTopic);
             consumer.subscribe(Collections.singletonList(sensorEventsTopic));
-            log.info("Subscribed to topic: {}", sensorEventsTopic);
-
             while (running) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(100));
                 if (records.isEmpty()) {
-                    log.debug("No records polled from {}", sensorEventsTopic);
+                    log.debug("Нет записей из топика {}", sensorEventsTopic);
                     continue;
                 }
+                log.debug("Получено {} записей из топика {}", records.count(), sensorEventsTopic);
                 for (ConsumerRecord<String, SensorEventAvro> record : records) {
                     SensorEventAvro event = record.value();
-                    log.debug("Processing event: {}", event);
-
-                    snapshotService.updateState(event).ifPresent(snapshot -> {
-                        ProducerRecord<String, SensorsSnapshotAvro> producerRecord =
-                                new ProducerRecord<>(snapshotsTopic, snapshot.getHubId(), snapshot);
-                        producer.send(producerRecord, (metadata, exception) -> {
-                            if (exception != null) {
-                                log.error("Error sending snapshot to topic {}: {}", snapshotsTopic, exception.getMessage());
-                            } else {
-                                log.debug("Sent snapshot to topic {}: partition {}, offset {}",
-                                        snapshotsTopic, metadata.partition(), metadata.offset());
-                            }
+                    log.info("Обработка события: hubId={}, sensorId={}, timestamp={}",
+                            event.getHubId(), event.getId(), event.getTimestamp());
+                    try {
+                        snapshotService.updateState(event).ifPresent(snapshot -> {
+                            ProducerRecord<String, SensorsSnapshotAvro> producerRecord =
+                                    new ProducerRecord<>(snapshotsTopic, snapshot.getHubId(), snapshot);
+                            log.info("Отправка снапшота для хаба {} в топик {}", snapshot.getHubId(), snapshotsTopic);
+                            producer.send(producerRecord, (metadata, exception) -> {
+                                if (exception != null) {
+                                    log.error("Ошибка отправки снапшота в топик {}: {}", snapshotsTopic, exception.getMessage());
+                                } else {
+                                    log.debug("Снапшот отправлен: topic={}, partition={}, offset={}",
+                                            snapshotsTopic, metadata.partition(), metadata.offset());
+                                }
+                            });
                         });
-                    });
+                    } catch (Exception e) {
+                        log.error("Ошибка обработки события: hubId={}, sensorId={}", event.getHubId(), event.getId(), e);
+                    }
                 }
-                consumer.commitSync();
+                try {
+                    consumer.commitSync();
+                    log.debug("Коммит смещений выполнен");
+                } catch (Exception e) {
+                    log.error("Ошибка коммита смещений", e);
+                }
             }
         } catch (WakeupException ignored) {
-            log.info("Received shutdown signal");
+            log.info("Получен сигнал завершения");
         } catch (Exception e) {
-            log.error("Error during event processing", e);
+            log.error("Критическая ошибка обработки событий", e);
         } finally {
             close();
         }
@@ -83,14 +92,19 @@ public class AggregationStarter implements ApplicationRunner, Closeable {
     @Override
     public void close() {
         running = false;
+        log.info("Закрытие AggregationStarter");
         try {
             producer.flush();
+            log.info("Продюсер сбросил данные");
             consumer.commitSync();
+            log.info("Финальный коммит смещений");
+        } catch (Exception e) {
+            log.error("Ошибка при закрытии", e);
         } finally {
-            log.info("Closing consumer");
             consumer.close();
-            log.info("Closing producer");
+            log.info("Консьюмер закрыт");
             producer.close();
+            log.info("Продюсер закрыт");
         }
     }
 }
