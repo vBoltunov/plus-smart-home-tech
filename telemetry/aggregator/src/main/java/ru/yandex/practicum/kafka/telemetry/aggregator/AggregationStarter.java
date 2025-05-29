@@ -68,6 +68,7 @@ public class AggregationStarter implements ApplicationRunner, Closeable {
                                             snapshotsTopic, metadata.partition(), metadata.offset());
                                 }
                             });
+                            producer.flush();
                         });
                     } catch (Exception e) {
                         log.error("Ошибка обработки события: hubId={}, sensorId={}", event.getHubId(), event.getId(), e);
