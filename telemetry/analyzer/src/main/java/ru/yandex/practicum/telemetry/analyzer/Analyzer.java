@@ -1,4 +1,3 @@
-// ru.yandex.practicum.telemetry.analyzer.Analyzer.java
 package ru.yandex.practicum.telemetry.analyzer;
 
 import net.devh.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration;
