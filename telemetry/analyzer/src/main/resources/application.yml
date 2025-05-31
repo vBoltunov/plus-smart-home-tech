@@ -17,10 +17,13 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      enable-auto-commit: false
-    properties:
-      schema.registry.url: http://localhost:8081
-      specific.avro.reader: true
+      group-id: analyzer-group
+      auto-offset-reset: earliest
+      properties:
+        schema.registry.url: http://localhost:8081
+        specific.avro.reader: true
+    listener:
+      type: batch
 kafka:
   topics:
     snapshots: telemetry.snapshots.v1
