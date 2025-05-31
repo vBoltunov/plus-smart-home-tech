@@ -68,6 +68,11 @@
             <artifactId>grpc-netty-shaded</artifactId>
             <version>1.63.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-census</artifactId>
+            <version>1.63.0</version>
+        </dependency>
         <!-- Serialization -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
