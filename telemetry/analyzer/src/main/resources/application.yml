@@ -19,9 +19,6 @@ spring:
     consumer:
       group-id: analyzer-group
       auto-offset-reset: earliest
-      properties:
-        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://schema-registry:8081}
-        specific.avro.reader: true
     listener:
       type: batch
 kafka:
@@ -44,5 +41,5 @@ logging:
     ru.yandex.practicum: DEBUG
     net.devh.boot.grpc: DEBUG
     io.grpc: DEBUG
-    org.springframework.core.env: DEBUG # Для отладки свойств
-    org.springframework.boot.context.properties: DEBUG # Для отладки профилей
+    org.springframework.core.env: DEBUG
+    org.springframework.boot.context.properties: DEBUG
