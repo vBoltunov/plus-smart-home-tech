@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.handler.HubEventHandler;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,12 @@ public class HubEventProcessor implements Runnable {
 
     private Map<String, HubEventHandler> handlerMap;
 
+    @PostConstruct
+    public void init() {
+        new Thread(this).start();
+        log.info("Started HubEventProcessor thread");
+    }
+
     @Override
     public void run() {
         handlerMap = handlers.stream()
@@ -45,7 +52,7 @@ public class HubEventProcessor implements Runnable {
                     HubEventAvro event = record.value();
                     String eventType = event.getPayload().getClass().getSimpleName();
                     if (handlerMap.containsKey(eventType)) {
-                        log.info("Processing event: hubId={}, type={}", event.getHubId(), eventType);
+                        log.info("Processing event: hubId={}", eventType);
                         handlerMap.get(eventType).handle(event);
                     } else {
                         log.warn("No handler for event type: {}", eventType);
