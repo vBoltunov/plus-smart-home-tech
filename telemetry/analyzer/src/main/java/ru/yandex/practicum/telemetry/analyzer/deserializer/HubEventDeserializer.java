@@ -1,24 +1,25 @@
 package ru.yandex.practicum.telemetry.analyzer.deserializer;
 
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.Schema;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.kafka.common.serialization.Deserializer;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
 public class HubEventDeserializer implements Deserializer<HubEventAvro> {
-    private final KafkaAvroDeserializer avroDeserializer;
-
-    public HubEventDeserializer() {
-        this.avroDeserializer = new KafkaAvroDeserializer();
-    }
+    private final DecoderFactory decoderFactory = DecoderFactory.get();
+    private final Schema schema = HubEventAvro.getClassSchema();
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        log.info("Configuring HubEventDeserializer with configs: {}", configs);
-        avroDeserializer.configure(configs, isKey);
+        // Конфигурация не требуется
     }
 
     @Override
@@ -28,23 +29,19 @@ public class HubEventDeserializer implements Deserializer<HubEventAvro> {
             return null;
         }
         try {
-            Object result = avroDeserializer.deserialize(topic, data);
-            if (result instanceof HubEventAvro) {
-                log.debug("Successfully deserialized HubEventAvro from topic: {}", topic);
-                return (HubEventAvro) result;
-            } else {
-                log.error("Deserialized object is not HubEventAvro: {}", result);
-                return null;
-            }
-        } catch (Exception e) {
-            log.error("Error deserializing data from topic {}: {}", topic, e.getMessage(), e);
-            return null;
+            Decoder decoder = decoderFactory.binaryDecoder(data, null);
+            DatumReader<HubEventAvro> reader = new SpecificDatumReader<>(schema);
+            HubEventAvro result = reader.read(null, decoder);
+            log.debug("Successfully deserialized HubEventAvro from topic: {}", topic);
+            return result;
+        } catch (IOException e) {
+            log.error("Error deserializing HubEventAvro from topic {}: {}", topic, e.getMessage(), e);
+            throw new RuntimeException("Failed to deserialize HubEventAvro", e);
         }
     }
 
     @Override
     public void close() {
-        log.info("Closing HubEventDeserializer");
-        avroDeserializer.close();
+        // Ресурсы не требуются
     }
 }
