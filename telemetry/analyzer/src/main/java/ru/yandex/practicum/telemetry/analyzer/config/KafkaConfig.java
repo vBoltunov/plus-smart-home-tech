@@ -32,7 +32,8 @@ public class KafkaConfig {
 
     @Bean
     public KafkaConsumer<String, SensorsSnapshotAvro> snapshotConsumer() {
-        log.info("Configuring snapshotConsumer with bootstrap.servers={} and schema.registry.url={}", bootstrapServers, schemaRegistryUrl);
+        log.info("Configuring snapshotConsumer: bootstrap.servers={}, schema.registry.url={}, group.id={}",
+                bootstrapServers, schemaRegistryUrl, snapshotsGroupId);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, snapshotsGroupId);
@@ -47,7 +48,8 @@ public class KafkaConfig {
 
     @Bean
     public KafkaConsumer<String, HubEventAvro> hubEventConsumer() {
-        log.info("Configuring hubEventConsumer with bootstrap.servers={} and schema.registry.url={}", bootstrapServers, schemaRegistryUrl);
+        log.info("Configuring hubEventConsumer: bootstrap.servers={}, schema.registry.url={}, group.id={}",
+                bootstrapServers, schemaRegistryUrl, hubGroupId);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, hubGroupId);
