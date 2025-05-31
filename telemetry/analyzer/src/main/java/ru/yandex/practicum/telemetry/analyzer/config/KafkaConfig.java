@@ -1,5 +1,6 @@
 package ru.yandex.practicum.telemetry.analyzer.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -13,23 +14,25 @@ import ru.yandex.practicum.telemetry.analyzer.deserializer.SensorsSnapshotDeseri
 
 import java.util.Properties;
 
+@Slf4j
 @Configuration
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
 
-    @Value("${kafka.consumer.group-id.snapshots}")
+    @Value("${kafka.consumer.group-id.snapshots:analyzer.snapshots}")
     private String snapshotsGroupId;
 
-    @Value("${kafka.consumer.group-id.hub}")
+    @Value("${kafka.consumer.group-id.hub:analyzer.hubs}")
     private String hubGroupId;
 
-    @Value("${spring.kafka.properties.schema.registry.url}")
+    @Value("${spring.kafka.properties.schema.registry.url:http://schema-registry:8081}")
     private String schemaRegistryUrl;
 
     @Bean
     public KafkaConsumer<String, SensorsSnapshotAvro> snapshotConsumer() {
+        log.info("Configuring snapshotConsumer with bootstrap.servers={} and schema.registry.url={}", bootstrapServers, schemaRegistryUrl);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, snapshotsGroupId);
@@ -44,6 +47,7 @@ public class KafkaConfig {
 
     @Bean
     public KafkaConsumer<String, HubEventAvro> hubEventConsumer() {
+        log.info("Configuring hubEventConsumer with bootstrap.servers={} and schema.registry.url={}", bootstrapServers, schemaRegistryUrl);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, hubGroupId);
