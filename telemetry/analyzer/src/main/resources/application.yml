@@ -15,12 +15,12 @@ spring:
     init:
       mode: always
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: analyzer-group
       auto-offset-reset: earliest
       properties:
-        schema.registry.url: http://localhost:8081
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://schema-registry:8081}
         specific.avro.reader: true
     listener:
       type: batch
@@ -44,3 +44,5 @@ logging:
     ru.yandex.practicum: DEBUG
     net.devh.boot.grpc: DEBUG
     io.grpc: DEBUG
+    org.springframework.core.env: DEBUG # Для отладки свойств
+    org.springframework.boot.context.properties: DEBUG # Для отладки профилей
