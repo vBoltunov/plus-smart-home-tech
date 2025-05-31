@@ -8,11 +8,12 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.handler.HubEventHandler;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HubEventProcessor implements Runnable {
+public class HubEventProcessor implements Runnable, ApplicationListener<ContextRefreshedEvent> {
     private final KafkaConsumer<String, HubEventAvro> hubEventConsumer;
     private final Set<HubEventHandler> handlers;
     private volatile boolean running = true;
@@ -34,8 +35,8 @@ public class HubEventProcessor implements Runnable {
 
     private Map<String, HubEventHandler> handlerMap;
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         new Thread(this, "HubEventHandlerThread").start();
         log.info("Started HubEventProcessor thread");
     }
@@ -43,7 +44,6 @@ public class HubEventProcessor implements Runnable {
     @Override
     public void run() {
         try {
-            // Инициализация handlerMap в потоке run
             handlerMap = handlers.stream()
                     .collect(Collectors.toMap(HubEventHandler::getEventType, Function.identity()));
             log.info("Initialized handlerMap with {} handlers", handlerMap.size());
@@ -86,7 +86,7 @@ public class HubEventProcessor implements Runnable {
                 } catch (Exception e) {
                     log.error("Error polling hub events: {}", e.getMessage(), e);
                     try {
-                        Thread.sleep(1000); // Задержка перед повторной попыткой
+                        Thread.sleep(1000);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         break;
