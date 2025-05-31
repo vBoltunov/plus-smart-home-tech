@@ -27,13 +27,10 @@ public class KafkaConfig {
     @Value("${kafka.consumer.group-id.hub:analyzer.hubs}")
     private String hubGroupId;
 
-    @Value("${spring.kafka.properties.schema.registry.url:http://schema-registry:8081}")
-    private String schemaRegistryUrl;
-
     @Bean
     public KafkaConsumer<String, SensorsSnapshotAvro> snapshotConsumer() {
-        log.info("Configuring snapshotConsumer: bootstrap.servers={}, schema.registry.url={}, group.id={}",
-                bootstrapServers, schemaRegistryUrl, snapshotsGroupId);
+        log.info("Configuring snapshotConsumer: bootstrap.servers={}, group.id={}",
+                bootstrapServers, snapshotsGroupId);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, snapshotsGroupId);
@@ -41,15 +38,13 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorsSnapshotDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put("schema.registry.url", schemaRegistryUrl);
-        props.put("specific.avro.reader", "true");
         return new KafkaConsumer<>(props);
     }
 
     @Bean
     public KafkaConsumer<String, HubEventAvro> hubEventConsumer() {
-        log.info("Configuring hubEventConsumer: bootstrap.servers={}, schema.registry.url={}, group.id={}",
-                bootstrapServers, schemaRegistryUrl, hubGroupId);
+        log.info("Configuring hubEventConsumer: bootstrap.servers={}, group.id={}",
+                bootstrapServers, hubGroupId);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, hubGroupId);
@@ -57,8 +52,6 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, HubEventDeserializer.class.getName());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put("schema.registry.url", schemaRegistryUrl);
-        props.put("specific.avro.reader", "true");
         return new KafkaConsumer<>(props);
     }
 }
