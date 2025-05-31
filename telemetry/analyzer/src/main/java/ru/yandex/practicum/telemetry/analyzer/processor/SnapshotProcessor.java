@@ -15,53 +15,78 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
+import java.util.Properties;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SnapshotProcessor {
-    private final KafkaConsumer<String, SensorsSnapshotAvro> snapshotConsumer;
+    private KafkaConsumer<String, SensorsSnapshotAvro> snapshotConsumer;
     private final SnapshotHandler snapshotHandler;
     private volatile boolean running = true;
 
     @Value("${kafka.topics.snapshots}")
     private String snapshotsTopic;
 
+    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    private String bootstrapServers;
+
+    @Value("${kafka.consumer.group-id.snapshots:analyzer.snapshots}")
+    private String snapshotsGroupId;
+
     @PostConstruct
     public void start() {
-        snapshotConsumer.subscribe(List.of(snapshotsTopic));
-        log.info("Subscribed to snapshots topic: {}", snapshotsTopic);
         new Thread(this::run, "SnapshotProcessorThread").start();
+        log.info("Started SnapshotProcessor thread");
     }
 
     public void run() {
-        while (running) {
-            try {
-                ConsumerRecords<String, SensorsSnapshotAvro> records = snapshotConsumer.poll(Duration.ofMillis(100));
-                for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
-                    try {
-                        SensorsSnapshotAvro snapshot = record.value();
-                        if (snapshot == null) {
-                            log.warn("Null snapshot received at offset {} in topic {}", record.offset(), snapshotsTopic);
-                            continue;
+        try {
+            // Инициализация KafkaConsumer
+            Properties props = new Properties();
+            props.put("bootstrap.servers", bootstrapServers);
+            props.put("group.id", snapshotsGroupId);
+            props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("value.deserializer", "ru.yandex.practicum.telemetry.analyzer.deserializer.SensorsSnapshotDeserializer");
+            props.put("auto.offset.reset", "earliest");
+            props.put("enable.auto.commit", "false");
+            snapshotConsumer = new KafkaConsumer<>(props);
+
+            snapshotConsumer.subscribe(List.of(snapshotsTopic));
+            log.info("Subscribed to snapshots topic: {}", snapshotsTopic);
+
+            while (running) {
+                try {
+                    ConsumerRecords<String, SensorsSnapshotAvro> records = snapshotConsumer.poll(Duration.ofMillis(100));
+                    for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
+                        try {
+                            SensorsSnapshotAvro snapshot = record.value();
+                            if (snapshot == null) {
+                                log.warn("Null snapshot received at offset {} in topic {}", record.offset(), snapshotsTopic);
+                                continue;
+                            }
+                            log.info("Processing snapshot: hubId={}, offset={}", snapshot.getHubId(), record.offset());
+                            snapshotHandler.handle(snapshot);
+                        } catch (Exception e) {
+                            log.error("Failed to process snapshot at offset {} in topic {}: {}", record.offset(), snapshotsTopic, e.getMessage(), e);
+                            snapshotConsumer.seek(new TopicPartition(record.topic(), record.partition()), record.offset() + 1);
                         }
-                        log.info("Processing snapshot: hubId={}, offset={}", snapshot.getHubId(), record.offset());
-                        snapshotHandler.handle(snapshot);
-                    } catch (Exception e) {
-                        log.error("Failed to process snapshot at offset {} in topic {}: {}", record.offset(), snapshotsTopic, e.getMessage(), e);
-                        snapshotConsumer.seek(new TopicPartition(record.topic(), record.partition()), record.offset() + 1);
+                    }
+                    snapshotConsumer.commitSync();
+                } catch (Exception e) {
+                    log.error("Error polling snapshots: {}", e.getMessage(), e);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
-                snapshotConsumer.commitSync();
-            } catch (Exception e) {
-                log.error("Error polling snapshots: {}", e.getMessage(), e);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
             }
+        } catch (Exception e) {
+            log.error("Fatal error in SnapshotProcessor: {}", e.getMessage(), e);
+        } finally {
+            shutdown();
         }
     }
 
@@ -69,12 +94,14 @@ public class SnapshotProcessor {
     public void shutdown() {
         log.info("Shutting down SnapshotProcessor");
         running = false;
-        snapshotConsumer.wakeup();
-        try {
-            snapshotConsumer.close(Duration.ofSeconds(5));
-            log.info("Snapshot consumer closed");
-        } catch (Exception e) {
-            log.error("Error closing snapshot consumer: {}", e.getMessage(), e);
+        if (snapshotConsumer != null) {
+            try {
+                snapshotConsumer.wakeup();
+                snapshotConsumer.close(Duration.ofSeconds(5));
+                log.info("Snapshot consumer closed");
+            } catch (Exception e) {
+                log.error("Error closing snapshot consumer: {}", e.getMessage(), e);
+            }
         }
     }
 }
