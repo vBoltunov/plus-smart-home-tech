@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 
@@ -28,27 +29,28 @@ import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Condition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private ConditionTypeAvro type;
+    ConditionTypeAvro type;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operation")
-    private ConditionOperationAvro operation;
+    ConditionOperationAvro operation;
 
     @Column(name = "value")
-    private Integer value;
+    Integer value;
 
     @ManyToOne
     @JoinColumn(name = "scenario_id", table = "scenario_conditions")
-    private Scenario scenario;
+    Scenario scenario;
 
     @ManyToOne
     @JoinColumn(name = "sensor_id", table = "scenario_conditions")
-    private Sensor sensor;
+    Sensor sensor;
 }
