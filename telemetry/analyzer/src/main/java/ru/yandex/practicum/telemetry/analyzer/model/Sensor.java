@@ -9,7 +9,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
+/**
+ * Represents a sensor in a smart home system.
+ *
+ * This class encapsulates sensor-related data, including unique identifier
+ * and associated hub ID.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the sensor.
+ * - `hubId` - Identifier of the hub associated with the sensor.
+ */
 @Entity
 @Table(name = "sensors")
 @Getter
@@ -17,11 +28,12 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Sensor {
     @Id
     @Column(name = "id")
-    private String id;
+    String id;
 
     @Column(name = "hub_id", nullable = false)
-    private String hubId;
+    String hubId;
 }

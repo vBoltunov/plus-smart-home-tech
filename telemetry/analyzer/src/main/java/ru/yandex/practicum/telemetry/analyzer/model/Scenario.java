@@ -12,7 +12,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
+/**
+ * Represents a smart home scenario.
+ *
+ * This class encapsulates scenario-related data, including hub ID and scenario name.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the scenario.
+ * - `hubId` - Identifier of the hub associated with the scenario.
+ * - `name` - Name of the scenario.
+ */
 @Entity
 @Table(name = "scenarios", uniqueConstraints = @UniqueConstraint(columnNames = {"hub_id", "name"}))
 @Getter
@@ -20,14 +31,15 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Scenario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(name = "hub_id", nullable = false)
-    private String hubId;
+    String hubId;
 
     @Column(name = "name", nullable = false)
-    private String name;
+    String name;
 }

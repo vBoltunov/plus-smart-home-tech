@@ -17,8 +17,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 
+/**
+ * Represents an action in a smart home scenario.
+ *
+ * This class encapsulates action-related data, including type, value,
+ * associated scenario, and linked sensor.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the action.
+ * - `type` - Defines the type of action.
+ * - `value` - Specifies the action's value.
+ * - `scenario` - The scenario in which the action is performed.
+ * - `sensor` - The sensor associated with the action.
+ */
 @Entity
 @Table(name = "actions")
 @SecondaryTable(name = "scenario_actions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "action_id"))
@@ -27,23 +41,24 @@ import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private ActionTypeAvro type;
+    ActionTypeAvro type;
 
     @Column(name = "value")
-    private Integer value;
+    Integer value;
 
     @ManyToOne
     @JoinColumn(name = "scenario_id", table = "scenario_actions")
-    private Scenario scenario;
+    Scenario scenario;
 
     @ManyToOne
     @JoinColumn(name = "sensor_id", table = "scenario_actions")
-    private Sensor sensor;
+    Sensor sensor;
 }
