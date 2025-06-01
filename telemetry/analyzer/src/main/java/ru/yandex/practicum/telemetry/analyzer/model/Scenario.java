@@ -14,6 +14,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Represents a smart home scenario.
+ *
+ * This class encapsulates scenario-related data, including hub ID and scenario name.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the scenario.
+ * - `hubId` - Identifier of the hub associated with the scenario.
+ * - `name` - Name of the scenario.
+ */
 @Entity
 @Table(name = "scenarios", uniqueConstraints = @UniqueConstraint(columnNames = {"hub_id", "name"}))
 @Getter
