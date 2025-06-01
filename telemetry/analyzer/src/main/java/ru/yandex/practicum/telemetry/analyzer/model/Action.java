@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 
 @Entity
@@ -27,23 +28,24 @@ import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private ActionTypeAvro type;
+    ActionTypeAvro type;
 
     @Column(name = "value")
-    private Integer value;
+    Integer value;
 
     @ManyToOne
     @JoinColumn(name = "scenario_id", table = "scenario_actions")
-    private Scenario scenario;
+    Scenario scenario;
 
     @ManyToOne
     @JoinColumn(name = "sensor_id", table = "scenario_actions")
-    private Sensor sensor;
+    Sensor sensor;
 }
