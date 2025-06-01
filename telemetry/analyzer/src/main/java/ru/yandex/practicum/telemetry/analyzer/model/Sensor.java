@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "sensors")
@@ -17,11 +18,12 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Sensor {
     @Id
     @Column(name = "id")
-    private String id;
+    String id;
 
     @Column(name = "hub_id", nullable = false)
-    private String hubId;
+    String hubId;
 }
