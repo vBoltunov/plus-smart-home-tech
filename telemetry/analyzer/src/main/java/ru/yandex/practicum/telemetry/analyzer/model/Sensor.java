@@ -11,6 +11,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Represents a sensor in a smart home system.
+ *
+ * This class encapsulates sensor-related data, including unique identifier
+ * and associated hub ID.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the sensor.
+ * - `hubId` - Identifier of the hub associated with the sensor.
+ */
 @Entity
 @Table(name = "sensors")
 @Getter
