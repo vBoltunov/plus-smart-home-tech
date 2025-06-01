@@ -21,6 +21,20 @@ import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 
+/**
+ * Represents a condition in a smart home scenario.
+ *
+ * This class encapsulates condition-related data, including type, comparison operation,
+ * value, associated scenario, and linked sensor.
+ *
+ * Fields:
+ * - `id` - Unique identifier of the condition.
+ * - `type` - Defines the type of condition.
+ * - `operation` - Specifies the comparison operation.
+ * - `value` - The threshold value for the condition.
+ * - `scenario` - The scenario in which the condition is applied.
+ * - `sensor` - The sensor associated with the condition.
+ */
 @Entity
 @Table(name = "conditions")
 @SecondaryTable(name = "scenario_conditions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "condition_id"))
