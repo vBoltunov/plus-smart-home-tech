@@ -1,17 +1,13 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
-    name: collector
+    name: aggregator
   jackson:
     time-zone: UTC
 
 kafka:
   bootstrap-servers: localhost:9092
-  hub-events-topic: telemetry.hubs.v1
   sensor-events-topic: telemetry.sensors.v1
-
-grpc:
-  server:
-    port: 9090
+  snapshots-topic: telemetry.snapshots.v1
