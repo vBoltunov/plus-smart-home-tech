@@ -1,17 +1,11 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: collector
-  jackson:
-    time-zone: UTC
-
-kafka:
-  bootstrap-servers: localhost:9092
-  hub-events-topic: telemetry.hubs.v1
-  sensor-events-topic: telemetry.sensors.v1
-
-grpc:
-  server:
-    port: 9090
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000

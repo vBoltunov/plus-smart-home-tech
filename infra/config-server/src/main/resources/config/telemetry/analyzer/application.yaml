@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/smart_home}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: analyzer-group
+      auto-offset-reset: earliest
+    listener:
+      type: batch
+kafka:
+  topics:
+    snapshots: telemetry.snapshots.v1
+    hub: telemetry.hubs.v1
+  consumer:
+    group-id:
+      snapshots: analyzer.snapshots
+      hub: analyzer.hubs
+grpc:
+  client:
+    hub-router:
+      address: ${GRPC_HUB_ROUTER_ADDRESS:static://localhost:59090}
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+logging:
+  level:
+    ru.yandex.practicum: DEBUG
+    net.devh.boot.grpc: DEBUG
+    io.grpc: DEBUG
+    org.springframework.core.env: DEBUG
+    org.springframework.boot.context.properties: DEBUG
