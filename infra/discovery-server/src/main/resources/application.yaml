@@ -9,3 +9,6 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    renewalPercentThreshold: 0.5  # Уменьшаем порог продлений до 50%
+    renewalThresholdUpdateIntervalMs: 10000 # Обновляем порог каждые 10 секунд
