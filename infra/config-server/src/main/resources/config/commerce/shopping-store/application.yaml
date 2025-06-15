@@ -10,11 +10,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: shopping_store
   sql:
     init:
       mode: always
       schema-locations: classpath:schema.sql
-      continue-on-error: true
+      continue-on-error: false
 server:
   port: 0
 eureka:
@@ -26,3 +27,8 @@ eureka:
     instance-id: ${spring.application.name}:${random.uuid}
     lease-renewal-interval-in-seconds: 5  # Heartbeats каждые 5 секунд
     lease-expiration-duration-in-seconds: 10 # Истечение аренды через 10 секунд
+logging:
+  level:
+    org.springframework.jdbc: DEBUG
+    org.springframework.boot.autoconfigure.sql: DEBUG
+    ru.yandex.practicum.commerce: DEBUG
