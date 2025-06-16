@@ -14,15 +14,17 @@ import ru.yandex.practicum.commerce.interaction_api.dto.ShoppingCartDto;
 
 @FeignClient(name = "warehouse")
 public interface WarehouseClient {
-    @PutMapping("/api/v1/warehouse")
+    String WAREHOUSE_ENDPOINT = "/api/v1/warehouse";
+
+    @PutMapping(WAREHOUSE_ENDPOINT)
     void newProductInWarehouse(@Valid @RequestBody NewProductInWarehouseRequest request);
 
-    @PostMapping("/api/v1/warehouse/add")
+    @PostMapping(WAREHOUSE_ENDPOINT + "/add")
     void addProductToWarehouse(@Valid @RequestBody AddProductToWarehouseRequest request);
 
-    @PostMapping("/api/v1/warehouse/check")
+    @PostMapping(WAREHOUSE_ENDPOINT + "/check")
     BookedProductsDto checkProductQuantityEnoughForShoppingCart(@Valid @RequestBody ShoppingCartDto cart);
 
-    @GetMapping("/api/v1/warehouse/address")
+    @GetMapping(WAREHOUSE_ENDPOINT + "/address")
     AddressDto getWarehouseAddress();
 }

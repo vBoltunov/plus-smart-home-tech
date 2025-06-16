@@ -15,21 +15,23 @@ import java.util.Map;
 
 @FeignClient(name = "cart")
 public interface ShoppingCartClient {
-    @PutMapping("/api/v1/shopping-cart")
+    String CART_ENDPOINT = "/api/v1/shopping-cart";
+
+    @PutMapping(CART_ENDPOINT)
     ShoppingCartDto addProductToShoppingCart(@RequestParam("username") String username,
                                              @RequestBody Map<String, Long> products);
 
-    @GetMapping("/api/v1/shopping-cart")
+    @GetMapping(CART_ENDPOINT)
     ShoppingCartDto getShoppingCart(@RequestParam("username") String username);
 
-    @PostMapping("/api/v1/shopping-cart/change-quantity")
+    @PostMapping(CART_ENDPOINT + "/change-quantity")
     ShoppingCartDto changeProductQuantity(@RequestParam("username") String username,
                                           @RequestBody ChangeProductQuantityRequest request);
 
-    @PostMapping("/api/v1/shopping-cart/remove")
+    @PostMapping(CART_ENDPOINT + "/remove")
     ShoppingCartDto removeFromShoppingCart(@RequestParam("username") String username,
                                            @RequestBody List<String> productIds);
 
-    @DeleteMapping("/api/v1/shopping-cart")
+    @DeleteMapping(CART_ENDPOINT)
     void deactivateCurrentShoppingCart(@RequestParam("username") String username);
 }
