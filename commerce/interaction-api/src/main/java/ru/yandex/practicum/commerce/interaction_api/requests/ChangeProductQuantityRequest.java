@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.interaction_api.dto;
+package ru.yandex.practicum.commerce.interaction_api.requests;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interaction_api.dto.ProductDto;
-import ru.yandex.practicum.commerce.interaction_api.dto.SetProductQuantityStateRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.SetProductQuantityStateRequest;
 import ru.yandex.practicum.commerce.interaction_api.enums.Category;
 import ru.yandex.practicum.commerce.interaction_api.enums.Status;
 import ru.yandex.practicum.commerce.interaction_api.exceptions.ProductNotFoundException;

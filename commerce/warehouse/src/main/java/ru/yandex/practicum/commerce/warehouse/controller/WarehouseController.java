@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.interaction_api.client.WarehouseClient;
-import ru.yandex.practicum.commerce.interaction_api.dto.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.interaction_api.dto.AddressDto;
 import ru.yandex.practicum.commerce.interaction_api.dto.BookedProductsDto;
-import ru.yandex.practicum.commerce.interaction_api.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.interaction_api.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.warehouse.service.WarehouseService;
 

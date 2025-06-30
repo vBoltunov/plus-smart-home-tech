@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.interaction_api.client.ProductClient;
 import ru.yandex.practicum.commerce.interaction_api.dto.ProductDto;
-import ru.yandex.practicum.commerce.interaction_api.dto.SetProductQuantityStateRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.SetProductQuantityStateRequest;
 import ru.yandex.practicum.commerce.interaction_api.enums.Availability;
 import ru.yandex.practicum.commerce.shopping_store.service.ProductService;
 
