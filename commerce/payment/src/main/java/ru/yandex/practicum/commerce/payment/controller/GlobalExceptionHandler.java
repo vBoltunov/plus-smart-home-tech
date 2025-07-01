@@ -14,13 +14,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotEnoughInfoInOrderToCalculateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleNotEnoughInfoException(NotEnoughInfoInOrderToCalculateException ex) {
+    public Map<String, Object> handleNotEnoughInfo(NotEnoughInfoInOrderToCalculateException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(NoOrderFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNoOrderFoundException(NoOrderFoundException ex) {
+    public Map<String, Object> handleNoOrderFound(NoOrderFoundException ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

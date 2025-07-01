@@ -15,19 +15,19 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotAuthorizedUserException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Map<String, Object> handleNotAuthorizedUserException(NotAuthorizedUserException ex) {
+    public Map<String, Object> handleNotAuthorizedUser(NotAuthorizedUserException ex) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(NoOrderFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNoOrderFoundException(NoOrderFoundException ex) {
+    public Map<String, Object> handleNoOrderFound(NoOrderFoundException ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(NoSpecifiedProductInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleNoSpecifiedProductInWarehouseException(
+    public Map<String, Object> handleNoSpecifiedProductInWarehouse(
             NoSpecifiedProductInWarehouseException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }

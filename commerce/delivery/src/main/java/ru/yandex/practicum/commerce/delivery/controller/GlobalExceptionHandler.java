@@ -13,7 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NoDeliveryFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNoDeliveryFoundException(NoDeliveryFoundException ex) {
+    public Map<String, Object> handleNoDeliveryFound(NoDeliveryFoundException ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

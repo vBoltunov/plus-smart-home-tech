@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSpecifiedProductInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleProductNotFoundException(NoSpecifiedProductInWarehouseException ex) {
+    public Map<String, Object> handleProductNotFound(NoSpecifiedProductInWarehouseException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
