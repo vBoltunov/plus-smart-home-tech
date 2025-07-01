@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.yandex.practicum.commerce.interaction_api.dto.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.interaction_api.dto.ShoppingCartDto;
 
 import java.util.List;
