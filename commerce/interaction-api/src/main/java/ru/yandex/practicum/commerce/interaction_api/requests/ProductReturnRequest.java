@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.interaction_api.requests;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,6 @@ import java.util.UUID;
 public class ProductReturnRequest {
     @NotNull
     UUID orderId;
-    @NotNull
+    @NotEmpty
     Map<String, Long> products;
 }
