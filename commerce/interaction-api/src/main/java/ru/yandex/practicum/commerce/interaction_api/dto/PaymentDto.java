@@ -10,18 +10,22 @@ import lombok.experimental.FieldDefaults;
 import java.util.UUID;
 
 /**
- * Request to update the quantity of a product in storage or display.
+ * Represents a payment in the system.
  *
  * Fields:
- * - `productId` – Identifier of the product to be updated.
- * - `newQuantity` – New quantity to be set for the specified product.
+ * - `paymentId` – Unique identifier of the payment.
+ * - `totalPayment` – Total cost of the payment.
+ * - `deliveryTotal` – Cost of delivery.
+ * - `feeTotal` – Tax amount (e.g., VAT).
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChangeProductQuantityRequest {
-    UUID productId;
-    Long newQuantity;
+public class PaymentDto {
+    UUID paymentId;
+    Double totalPayment;
+    Double deliveryTotal;
+    Double feeTotal;
 }

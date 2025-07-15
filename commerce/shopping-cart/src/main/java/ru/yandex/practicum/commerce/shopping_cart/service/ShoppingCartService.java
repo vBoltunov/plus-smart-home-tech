@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.interaction_api.client.WarehouseClient;
-import ru.yandex.practicum.commerce.interaction_api.dto.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.interaction_api.requests.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.interaction_api.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.interaction_api.enums.Status;
 import ru.yandex.practicum.commerce.interaction_api.exceptions.NoProductsInShoppingCartException;

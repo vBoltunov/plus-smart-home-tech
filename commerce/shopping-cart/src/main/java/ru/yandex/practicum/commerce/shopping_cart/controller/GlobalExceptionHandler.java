@@ -17,13 +17,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotAuthorizedUserException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Map<String, Object> handleNotAuthorizedUserException(NotAuthorizedUserException ex) {
+    public Map<String, Object> handleNotAuthorizedUser(NotAuthorizedUserException ex) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(NoProductsInShoppingCartException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleNoProductsInShoppingCartException(NoProductsInShoppingCartException ex) {
+    public Map<String, Object> handleNoProductsInCart(NoProductsInShoppingCartException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -41,14 +41,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSpecifiedProductInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleNoSpecifiedProductInWarehouseException(
+    public Map<String, Object> handleNoSpecifiedProductInWarehouse(
             NoSpecifiedProductInWarehouseException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(ProductInShoppingCartLowQuantityInWarehouse.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleProductInShoppingCartLowQuantityInWarehouse(
+    public Map<String, Object> handleLowQuantityException(
             ProductInShoppingCartLowQuantityInWarehouse ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
