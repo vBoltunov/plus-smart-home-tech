@@ -1,5 +1,13 @@
 # Smart Home Platform
 
+![Java Version](https://img.shields.io/badge/Java-21-orange?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.2-green?logo=springboot&logoColor=white)
+![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.3-blue?logo=spring&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-3.6.1-yellow?logo=apachekafka&logoColor=white)
+![gRPC](https://img.shields.io/badge/gRPC-1.65.1-lightblue?logo=grpc&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-20.10+-2496ED?logo=docker&logoColor=white)
+
 Это микросервисная платформа для управления умным домом с бэкендом интернет-магазина умных устройств. Платформа обеспечивает сбор и анализ телеметрии от датчиков в реальном времени, автоматический запуск пользовательских сценариев автоматизации, а также предоставляет серверную часть (backend-only) для электронной коммерции - без фронтенда.
 
 ## Основные модули
